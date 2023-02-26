@@ -37,10 +37,15 @@ public class NeuralNetwork {
 	}
 
 	public void train(double[] X, double[] Y) {
+
+		//CALCULATE THE HIDDEN NEURONS
+
 		Matrix input = Matrix.fromArray(X);
 		Matrix hidden = Matrix.multiply(weights_ih, input);
 		hidden.add(bias_h);
 		hidden.sigmoid();
+
+		//CALCULATE THE PREDICTED OUTPUT
 
 		Matrix output = Matrix.multiply(weights_ho, hidden);
 		output.add(bias_o);
@@ -48,16 +53,25 @@ public class NeuralNetwork {
 
 		Matrix target = Matrix.fromArray(Y);
 
+		//CALCULATE THE ERROR AND GRADIENT
+
 		Matrix error = Matrix.subtract(target, output);
 		Matrix gradient = output.dsigmoid();
 		gradient.multiply(error);
 		gradient.multiply(l_rate);
 
+		//CALCULATE THE DELTA
+
 		Matrix hidden_T = Matrix.transpose(hidden);
 		Matrix who_delta = Matrix.multiply(gradient, hidden_T);
 
+		//ADD THE GRADIENT AND DELTA TO WEIGHT AND BIAS OF HIDDEN/OUTPUT AND OUTPUT
+
 		weights_ho.add(who_delta);
 		bias_o.add(gradient);
+
+
+		//CALCULATE GRADIENT AND DELTA FOR INPUT/HIDDEN LAYER
 
 		Matrix who_T = Matrix.transpose(weights_ho);
 		Matrix hidden_errors = Matrix.multiply(who_T, error);
